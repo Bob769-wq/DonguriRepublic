@@ -15,6 +15,7 @@ module.exports = {
         'info-link-color-blue': '#3493fb',
         'button-hover': '#bba877cc',
         'menu-bar': '#f7f7f7',
+        'sub-bg': '#ffffff1a',
       },
       maxWidth: {
         1170: '73.125rem',

@@ -6,6 +6,7 @@ interface NavList {
   title: string;
   link: string;
   children?: NavList[];
+  isExpanded?: boolean;
 }
 @Component({
   selector: 'app-header-nav',
@@ -179,7 +180,7 @@ interface NavList {
               <li>
                 <a [routerLink]="item.link" class="block w-full px-6 py-4 relative">
                   <span>{{ item.title }}</span>
-                  <span class="absolute right-0 pr-2">
+                  <span class="absolute right-0 pr-2" (click)="toggleSub(item)">
                     <i
                       class="fa-solid fa-chevron-down fa-xs border "
                       style="color: currentColor;"
@@ -187,6 +188,18 @@ interface NavList {
                   </span>
                 </a>
               </li>
+              <ul
+                class="bg-sub-bg overflow-hidden transition-all duration-500 ease-in-out"
+                [class]="item.isExpanded ? 'max-h-96' : 'max-h-0'"
+              >
+                @for (child of item.children; track child.id) {
+                  <li class=" text-center">
+                    <a [routerLink]="child.link" class="inline-block px-5 py-4">{{
+                      child.title
+                    }}</a>
+                  </li>
+                }
+              </ul>
             } @else {
               <li>
                 <a [routerLink]="item.link" class="block w-full py-4">{{ item.title }}</a>
@@ -246,6 +259,12 @@ export class HeaderNav {
     this.isMenuOpen.update((value) => !value);
   }
 
+  toggleSub(item: NavList) {
+    if (item.children) {
+      item.isExpanded = !item.isExpanded;
+    }
+  }
+
   isSearchBarOpen = signal(false);
   toggleSearchBar() {
     this.isSearchBarOpen.update((value) => !value);
@@ -273,6 +292,7 @@ export class HeaderNav {
       id: 1,
       title: '依作品分類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '龍貓', link: '/work' }],
     },
     { id: 2, title: '精選商品', link: '/sub' },
@@ -280,45 +300,64 @@ export class HeaderNav {
       id: 3,
       title: '玩具．玩偶類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '玩偶', link: '/work' }],
     },
     {
       id: 4,
       title: '裝飾品類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '市內擺設', link: '/work' }],
     },
     {
       id: 5,
       title: '居家用品類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '手巾．手帕', link: '/work' }],
     },
     {
       id: 6,
       title: '包包',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '托特包．手提包', link: '/work' }],
     },
-    { id: 7, title: '服飾類', link: '/sub', children: [{ id: 1, title: '衣服', link: '/work' }] },
-    { id: 8, title: '飾品類', link: '/sub', children: [{ id: 1, title: '髮飾', link: '/work' }] },
+    {
+      id: 7,
+      title: '服飾類',
+      link: '/sub',
+      isExpanded: false,
+      children: [{ id: 1, title: '衣服', link: '/work' }],
+    },
+    {
+      id: 8,
+      title: '飾品類',
+      link: '/sub',
+      isExpanded: false,
+      children: [{ id: 1, title: '髮飾', link: '/work' }],
+    },
     { id: 9, title: '吊飾類', link: '/sub' },
     {
       id: 10,
       title: '文具類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '筆．筆袋', link: '/work' }],
     },
     {
       id: 11,
       title: '影音．書籍類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '書籍', link: '/work' }],
     },
     {
       id: 12,
       title: '季節性商品類',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '節慶物品', link: '/work' }],
     },
     { id: 13, title: 'GBL', link: '/sub' },
@@ -327,6 +366,7 @@ export class HeaderNav {
       id: 15,
       title: '新商品',
       link: '/sub',
+      isExpanded: false,
       children: [{ id: 1, title: '2025.10新商品', link: '/work' }],
     },
     { id: 16, title: '包裝用品', link: '/sub' },
