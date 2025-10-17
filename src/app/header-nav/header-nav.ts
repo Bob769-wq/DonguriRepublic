@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 interface NavList {
@@ -20,9 +20,35 @@ interface NavList {
       <div class="media-screen-75rem:px-5 bg-white">
         <div class="media-screen-75rem:p-2 flex items-center">
           <ul class="flex-1 flex gap-4 items-center media-screen-75rem:invisible">
-            <li class="cursor-pointer ml-2">
+            <li class="cursor-pointer ml-2" (click)="toggleSearchBar()">
               <i class="fa-solid fa-magnifying-glass fa-xl" style="color: currentColor;"></i>
             </li>
+            @if (isSearchBarOpen()) {
+              <div class="fixed inset-0 z-[11000]">
+                <div
+                  class="absolute inset-0 bg-black bg-opacity-40"
+                  (click)="toggleSearchBar()"
+                ></div>
+                <div class="fixed top-9 left-0 right-0 bg-white ">
+                  <div class="p-4">
+                    <form [formGroup]="form" class="flex items-center gap-2" (submit)="submit()">
+                      <button type="submit">
+                        <i
+                          class="fa-solid fa-magnifying-glass fa-xl"
+                          style="color: currentColor;"
+                        ></i>
+                      </button>
+                      <input
+                        type="text"
+                        class="text-lg border-b flex-1 border-b-black outline-none"
+                        placeholder="找商品"
+                        formControlName="searchControl"
+                      />
+                    </form>
+                  </div>
+                </div>
+              </div>
+            }
             <li>
               <a routerLink="/user"
                 ><i class="fa-solid fa-user fa-xl" style="color: currentColor;"></i
@@ -33,7 +59,12 @@ interface NavList {
             routerLink="/"
             class="flex-1 min-h-10 max-h-36  justify-center media-screen-75rem:flex hidden"
           >
-            <img src="/logo/logo-normal.webp" class="max-h-28 max-w-full" alt="logo" />
+            <img
+              src="/logo/logo-normal.webp"
+              class=" max-w-full"
+              alt="logo"
+              [class]="isScrolled() ? 'max-h-14' : 'max-h-28'"
+            />
           </a>
           <a routerLink="/" class="flex-1 py-2 px-4 flex justify-center media-screen-75rem:hidden">
             <img src="/logo/logo-small.webp" class="max-w-40 max-h-11  object-contain" alt="logo" />
@@ -67,10 +98,13 @@ interface NavList {
                 ><i class="fa-solid fa-user fa-xl" style="color: currentColor;"></i
               ></a>
             </li>
-            <li class="cursor-pointer">
+            <li class="cursor-pointer hidden media-screen-75rem:block" (click)="toggle1200Cart()">
               <i class="fa-solid fa-bag-shopping fa-xl" style="color: currentColor;"></i>
             </li>
-            <li (click)="toggleMenu()" class="media-screen-75rem:hidden">
+            <li class="cursor-pointer media-screen-75rem:hidden" (click)="toggleCart()">
+              <i class="fa-solid fa-bag-shopping fa-xl" style="color: currentColor;"></i>
+            </li>
+            <li (click)="toggleMenu()" class="media-screen-75rem:hidden cursor-pointer">
               <div class="p-5 bg-menu-bar">
                 <i class="fa-solid fa-bars fa-xl" style="color: currentColor;"></i>
               </div>
@@ -88,6 +122,36 @@ interface NavList {
         </ul>
       </div>
     </header>
+
+    <div
+      class="fixed inset-0 bg-black bg-opacity-40 z-[11000]"
+      [class]="is1200CartOpen() ? 'opacity-100' : 'opacity-0 pointer-events-none'"
+      (click)="toggle1200Cart()"
+    ></div>
+
+    <div
+      class="fixed top-header-height right-10 h-40 w-72 bg-white z-[12000] overflow-y-auto transition-transform duration-500 ease-in-out"
+      [class]="is1200CartOpen() ? 'translate-x-0' : 'translate-x-[calc(100%+2.5rem)]'"
+    >
+      <div class="flex justify-center items-center h-full">
+        <p>你的夠物車是空的</p>
+      </div>
+    </div>
+
+    <div
+      class="fixed inset-0 bg-black bg-opacity-40 z-[11000]"
+      [class]="isCartOpen() ? 'opacity-100' : 'opacity-0 pointer-events-none'"
+      (click)="toggleCart()"
+    ></div>
+
+    <div
+      class="fixed top-0 left-0 h-full w-72 bg-white z-[12000] overflow-y-auto transition-transform duration-500 ease-in-out"
+      [class]="isCartOpen() ? 'translate-x-0' : '-translate-x-full'"
+    >
+      <div class="flex h-full items-center justify-center">
+        <p>你的購物車是空的</p>
+      </div>
+    </div>
 
     <div
       class="fixed inset-0 bg-black bg-opacity-40 z-[11000]"
@@ -109,11 +173,25 @@ interface NavList {
         <h3 class="text-2xl font-bold text-center">
           <span class="border-t inline-block border-t-nav-font pt-4 px-4">分類</span>
         </h3>
-        <ul class="flex flex-col items-center text-base">
+        <ul class="text-center text-base">
           @for (item of sideItems; track item.id) {
-            <li>
-              <a [routerLink]="item.link" class="block w-full py-4">{{ item.title }}</a>
-            </li>
+            @if (item.children) {
+              <li>
+                <a [routerLink]="item.link" class="block w-full px-6 py-4 relative">
+                  <span>{{ item.title }}</span>
+                  <span class="absolute right-0 pr-2">
+                    <i
+                      class="fa-solid fa-chevron-down fa-xs border "
+                      style="color: currentColor;"
+                    ></i>
+                  </span>
+                </a>
+              </li>
+            } @else {
+              <li>
+                <a [routerLink]="item.link" class="block w-full py-4">{{ item.title }}</a>
+              </li>
+            }
           }
         </ul>
         <h3 class="text-2xl font-bold text-center">
@@ -127,7 +205,10 @@ interface NavList {
           }
         </ul>
         <div class="flex justify-center pb-4">
-          <a class="border rounded-full h-10 w-10 flex items-center justify-center border-nav-font">
+          <a
+            routerLink="/comment"
+            class="border rounded-full h-10 w-10 flex items-center justify-center border-nav-font"
+          >
             <i class="fa-solid fa-comment fa-xl" style="color: currentColor;"></i>
           </a>
         </div>
@@ -137,6 +218,12 @@ interface NavList {
   styles: ``,
 })
 export class HeaderNav {
+  isScrolled = signal(false);
+  @HostListener('window:scroll')
+  onScroll() {
+    this.isScrolled.set(window.scrollY > 50);
+  }
+
   fb = inject(NonNullableFormBuilder);
   form = this.fb.group({
     searchControl: this.fb.control('', {
@@ -158,6 +245,20 @@ export class HeaderNav {
   toggleMenu() {
     this.isMenuOpen.update((value) => !value);
   }
+
+  isSearchBarOpen = signal(false);
+  toggleSearchBar() {
+    this.isSearchBarOpen.update((value) => !value);
+  }
+  isCartOpen = signal(false);
+  toggleCart() {
+    this.isCartOpen.update((value) => !value);
+  }
+  is1200CartOpen = signal(false);
+  toggle1200Cart() {
+    this.is1200CartOpen.update((value) => !value);
+  }
+
   navItems: NavList[] = [
     { id: 1, title: '首頁', link: '/nav' },
     { id: 2, title: '所有商品', link: '/nav' },
