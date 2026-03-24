@@ -49,8 +49,8 @@ import { HeaderNav } from './header-nav/header-nav';
     <app-store />
     <app-crumb />
     <app-footer />
-    <div class="text-black text-2xl text-center py-3">test 4</div>
-    <div class="text-black text-2xl text-center py-3 bg-red-500">test 5</div>
+
+    <div class="text-black text-2xl text-center py-5 bg-orange-400">new one feature</div>
   `,
   styles: ``,
 })
