@@ -49,7 +49,7 @@ import { HeaderNav } from './header-nav/header-nav';
     <app-store />
     <app-crumb />
     <app-footer />
-    <div class="text-black text-2xl text-center py-3">test</div>
+    <div class="text-black text-2xl text-center py-3">test 2</div>
   `,
   styles: ``,
 })
