@@ -50,6 +50,7 @@ import { HeaderNav } from './header-nav/header-nav';
     <app-crumb />
     <app-footer />
     <div class="text-black text-2xl text-center py-3">test 2</div>
+    <div class="text-black text-2xl text-center py-3 bg-red-500">test 3</div>
   `,
   styles: ``,
 })
